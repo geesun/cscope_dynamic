@@ -150,18 +150,21 @@ function! s:dbUpdate()
         endif
     endif
 
-    if s:update_linux_kernel !~ "none"
-      let cmd = "find . -maxdepth 1 -type d  -not -path \"./arch\" -not -path \"./.git\" -not -path \".\" > ".s:src_dirs_file
+    " Touch lock file synchronously
+    call s:runShellCommand("touch ".s:lock_file)
 
-      call s:runShellCommand(cmd)
-      let cmd = "echo \"./arch/".s:update_linux_kernel."\">>".s:src_dirs_file
-      call s:runShellCommand(cmd)
+    if s:update_linux_kernel !~ "none"
+      if !filereadable(expand(s:src_dirs_file))
+        let cmd = "find . -maxdepth 1 -type d  -not -path \"./arch\" -not -path \"./.git\" -not -path \".\" > ".s:src_dirs_file
+
+        call s:runShellCommand(cmd)
+        let cmd = "echo \"./arch/".s:update_linux_kernel."\">>".s:src_dirs_file
+        call s:runShellCommand(cmd)
+      endif
     endif
 
     let cmd = ""
 
-    " Touch lock file synchronously
-    call s:runShellCommand("touch ".s:lock_file)
     
     " Do small update first. We'll do big update
     " after the small updates are done.
