@@ -83,6 +83,7 @@ endif
 
 " Section: Internal script variables {{{1
 "
+let s:update_linux_kernel="none"
 let s:big_update = 0
 let s:big_last_update = 0
 let s:big_init = 0
@@ -147,6 +148,14 @@ function! s:dbUpdate()
         if localtime() < s:big_last_update + s:big_min_interval
             return
         endif
+    endif
+
+    if s:update_linux_kernel !~ "none"
+      let cmd = "find . -maxdepth 1 -type d  -not -path \"./arch\" -not -path \"./.git\" -not -path \".\" > ".s:src_dirs_file
+
+      call s:runShellCommand(cmd)
+      let cmd = "echo \"./arch/".s:update_linux_kernel."\">>".s:src_dirs_file
+      call s:runShellCommand(cmd)
     endif
 
     let cmd = ""
@@ -339,6 +348,15 @@ function! s:initForce()
     call s:init()
 endfunction
 
+
+function! s:initArm64LinuxForce()
+    let s:full_update_force = 1
+    let s:update_linux_kernel= "arm64"
+    let s:src_dirs_file = ".cscope.dirs.file"
+    call s:init()
+endfunction
+
+
 " Section: Autocommands {{{1
 "
 function! s:installAutoCommands()
@@ -354,6 +372,7 @@ endfunction
 " Section: Maps {{{1
 "
 noremap <unique> <Plug>CscopeDBInit :call <SID>initForce()<CR>
+noremap <unique> <Plug>CscopeDBLinuxInit :call <SID>initArm64LinuxForce()<CR>
 
 " Autoinit: {{{1
 "

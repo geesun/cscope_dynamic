@@ -50,6 +50,7 @@ database already exists (because you've already done init) and you re-launch
 Vim then the plugin will auto initialize.
 
     nmap <F12> <Plug>CscopeDBInit
+    nmap <F10> <Plug>CscopeDBLinuxInit
 
 1.2 cscope key maps
 =======================================
